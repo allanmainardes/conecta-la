@@ -1,5 +1,7 @@
 # conecta-la
 
+- docker compose up -d
+
 ## Rotas de Autenticação
 
 ### `POST /register`
