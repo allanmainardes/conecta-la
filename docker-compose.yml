@@ -1,0 +1,58 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - database
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.7.101
+    command: >
+      sh -c "chown -R appuser:appuser /var/www/html && php-fpm"
+  
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./nginx:/etc/nginx/conf.d/
+    depends_on:
+      - backend
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.7.102
+
+  database:
+    image: mysql:8.0
+    container_name: database
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: t00r@
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: system
+      MYSQL_PASSWORD: syst3m@
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.7.103
+  
+volumes:
+    mysql_data:
+
+networks:
+    mynetwork:
+      driver: bridge
+      ipam:
+        config:
+          - subnet: 192.168.7.0/24
