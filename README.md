@@ -1,6 +1,6 @@
 # conecta-la
 
-- docker compose up -d
+- make setup
 
 ## Rotas de Autenticação
 
